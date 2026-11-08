@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Kumbu - Painel</title>
+<style>
+body{background:#f2f2f7;font-family:Arial;margin:0;padding:15px}
+.top{background:#4F6EF7;color:white;padding:15px;border-radius:15px;text-align:center}
+.saldo{font-size:32px;font-weight:bold}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.card{background:white;padding:15px;border-radius:15px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+input{width:100%;padding:12px;margin:5px 0;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
+button{width:100%;padding:12px;background:#4F6EF7;color:white;border:none;border-radius:10px;font-weight:bold;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="top"><div>Saldo Total</div><div class="saldo" id="saldo">Kz 0,00</div></div>
+<div class="cards">
+<div class="card"><div>Entradas</div><b id="entradas" style="color:green">Kz 0</b></div>
+<div class="card"><div>Saídas</div><b id="saidas" style="color:red">Kz 0</b></div>
+</div>
+<div class="card" style="margin-top:15px">
+<input id="desc" placeholder="Descrição ex: salário">
+<input id="valor" type="number" placeholder="Valor ex: 50000">
+<select id="tipo" style="width:100%;padding:12px;border-radius:10px;margin:5px 0"><option value="entrada">Entrada</option><option value="saida">Saída</option></select>
+<button onclick="add()">Adicionar</button>
+</div>
+<div id="lista" style="margin-top:15px"></div>
+<button onclick="sair()" style="background:#888;margin-top:20px">Sair</button>
+<script>
+let dados=JSON.parse(localStorage.getItem("kumbu")||"[]");
+function render(){
+let e=0,s=0,html="";
+dados.forEach((x,i)=>{if(x.tipo=="entrada"){e+=x.valor}else{s+=x.valor} html+=`<div class='card' style='margin-top:8px;display:flex;justify-content:space-between'><span>${x.desc}</span><span style='color:${x.tipo=="entrada"?"green":"red"}'>${x.tipo=="entrada"?"+":"-"} Kz ${x.valor}</span></div>`});
+document.getElementById("saldo").innerText="Kz "+(e-s).toLocaleString('pt-AO')+",00";
+document.getElementById("entradas").innerText="Kz "+e.toLocaleString('pt-AO');
+document.getElementById("saidas").innerText="Kz "+s.toLocaleString('pt-AO');
+document.getElementById("lista").innerHTML=html;
+}
+function add(){
+let d=document.getElementById("desc").value;
+let v=parseFloat(document.getElementById("valor").value);
+let t=document.getElementById("tipo").value;
+if(!d||!v)return alert("Preencha tudo");
+dados.push({desc:d,valor:v,tipo:t});
+localStorage.setItem("kumbu",JSON.stringify(dados));
+document.getElementById("desc").value="";document.getElementById("valor").value="";
+render();
+}
+function sair(){window.location.href="index.html"}
+render();
+</script>
+</body>
+</html>
